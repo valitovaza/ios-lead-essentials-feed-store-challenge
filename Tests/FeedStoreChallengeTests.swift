@@ -5,6 +5,20 @@
 import XCTest
 import FeedStoreChallenge
 
+class CoreDataFeedStore: FeedStore {
+	func deleteCachedFeed(completion: @escaping DeletionCompletion) {
+		
+	}
+	
+	func insert(_ feed: [LocalFeedImage], timestamp: Date, completion: @escaping InsertionCompletion) {
+		
+	}
+	
+	func retrieve(completion: @escaping RetrievalCompletion) {
+		completion(.empty)
+	}
+}
+
 class FeedStoreChallengeTests: XCTestCase, FeedStoreSpecs {
 	
 	//  ***********************
@@ -20,9 +34,9 @@ class FeedStoreChallengeTests: XCTestCase, FeedStoreSpecs {
 	//  ***********************
 	
 	func test_retrieve_deliversEmptyOnEmptyCache() throws {
-//		let sut = try makeSUT()
-//		
-//		assertThatRetrieveDeliversEmptyOnEmptyCache(on: sut)
+		let sut = try makeSUT()
+		
+		assertThatRetrieveDeliversEmptyOnEmptyCache(on: sut)
 	}
 	
 	func test_retrieve_hasNoSideEffectsOnEmptyCache() throws {
@@ -94,7 +108,7 @@ class FeedStoreChallengeTests: XCTestCase, FeedStoreSpecs {
 	// - MARK: Helpers
 	
 	private func makeSUT() throws -> FeedStore {
-		fatalError("Must be implemented")
+		return CoreDataFeedStore()
 	}
 	
 }
