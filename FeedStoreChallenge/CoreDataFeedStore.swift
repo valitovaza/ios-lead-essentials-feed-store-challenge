@@ -26,14 +26,17 @@ public class CoreDataFeedStore: FeedStore {
 			}
 		}
 	}
+	
 	private func createUniqueCoreDataFeed(_ feed: [LocalFeedImage], _ timestamp: Date) throws {
 		try self.removePreviousCoreDataFeedOptionally()
 		self.createCoreDataFeed(feed, timestamp)
 	}
+	
 	private func removePreviousCoreDataFeedOptionally() throws {
 		guard let oldFeed = try self.retrieveCoreDataFeed() else { return }
 		context.delete(oldFeed)
 	}
+	
 	private func createCoreDataFeed(_ feed: [LocalFeedImage], _ timestamp: Date) {
 		let coreDataFeed = CoreDataFeed(context: context)
 		coreDataFeed.timestamp = timestamp
@@ -53,7 +56,7 @@ public class CoreDataFeedStore: FeedStore {
 			do {
 				if let coreDataFeed = try self.retrieveCoreDataFeed(), let feedImages = coreDataFeed.feedImages, let timestamp = coreDataFeed.timestamp {
 					completion(.found(feed: feedImages.toLocalFeedImages, timestamp: timestamp))
-				}else{
+				} else {
 					completion(.empty)
 				}
 			} catch {
@@ -61,14 +64,17 @@ public class CoreDataFeedStore: FeedStore {
 			}
 		}
 	}
+	
 	private func retrieveCoreDataFeed() throws -> CoreDataFeed? {
 		let request = NSFetchRequest<CoreDataFeed>(entityName: "CoreDataFeed")
 		return try self.context.fetch(request).first
 	}
 }
+
 enum CoreDataFeedStoreError: Error {
 	case invalidModel
 }
+
 extension NSPersistentContainer {
 	fileprivate static func loadBy(modelName: String, storeURL: URL) throws -> NSPersistentContainer {
 		guard let url = Bundle(for: CoreDataFeedStore.self).url(forResource: modelName, withExtension: "momd"), let model = NSManagedObjectModel(contentsOf: url) else {
@@ -83,6 +89,7 @@ extension NSPersistentContainer {
 		return container
 	}
 }
+
 extension NSOrderedSet {
 	var toLocalFeedImages: [LocalFeedImage] {
 		compactMap({$0 as? CoreDataFeedImage}).compactMap({
