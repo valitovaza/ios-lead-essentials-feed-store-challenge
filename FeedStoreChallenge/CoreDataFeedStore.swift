@@ -18,10 +18,7 @@ public class CoreDataFeedStore: FeedStore {
 	public func insert(_ feed: [LocalFeedImage], timestamp: Date, completion: @escaping InsertionCompletion) {
 		context.perform {
 			do {
-				if let oldFeed = try self.retrieveCoreDataFeed() {
-					self.context.delete(oldFeed)
-				}
-				self.createCoreDataFeed(feed, timestamp: timestamp)
+				try self.createUniqueCoreDataFeed(feed, timestamp)
 				try self.context.save()
 				completion(nil)
 			} catch {
@@ -29,7 +26,15 @@ public class CoreDataFeedStore: FeedStore {
 			}
 		}
 	}
-	private func createCoreDataFeed(_ feed: [LocalFeedImage], timestamp: Date) {
+	private func createUniqueCoreDataFeed(_ feed: [LocalFeedImage], _ timestamp: Date) throws {
+		try self.removePreviousCoreDataFeedOptionally()
+		self.createCoreDataFeed(feed, timestamp)
+	}
+	private func removePreviousCoreDataFeedOptionally() throws {
+		guard let oldFeed = try self.retrieveCoreDataFeed() else { return }
+		context.delete(oldFeed)
+	}
+	private func createCoreDataFeed(_ feed: [LocalFeedImage], _ timestamp: Date) {
 		let coreDataFeed = CoreDataFeed(context: context)
 		coreDataFeed.timestamp = timestamp
 		let images = NSOrderedSet(array: feed.map { local in
