@@ -17,8 +17,11 @@ public class CoreDataFeedStore: FeedStore {
 	
 	public func insert(_ feed: [LocalFeedImage], timestamp: Date, completion: @escaping InsertionCompletion) {
 		context.perform {
-			self.createCoreDataFeed(feed, timestamp: timestamp)
 			do {
+				if let oldFeed = try self.retrieveCoreDataFeed() {
+					self.context.delete(oldFeed)
+				}
+				self.createCoreDataFeed(feed, timestamp: timestamp)
 				try self.context.save()
 				completion(nil)
 			} catch {
