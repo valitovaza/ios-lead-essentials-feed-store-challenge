@@ -98,7 +98,7 @@ extension NSPersistentContainer {
 	}
 }
 
-extension NSOrderedSet {
+private extension NSOrderedSet {
 	var toLocalFeedImages: [LocalFeedImage] {
 		compactMap({$0 as? CoreDataFeedImage}).compactMap({
 			guard let id = $0.id else { return nil }
