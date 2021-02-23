@@ -12,7 +12,14 @@ public class CoreDataFeedStore: FeedStore {
 	}
 	
 	public func deleteCachedFeed(completion: @escaping DeletionCompletion) {
-		completion(nil)
+		context.perform {
+			do {
+				try self.removePreviousCoreDataFeedOptionally()
+				completion(nil)
+			} catch {
+				completion(error)
+			}
+		}
 	}
 	
 	public func insert(_ feed: [LocalFeedImage], timestamp: Date, completion: @escaping InsertionCompletion) {
