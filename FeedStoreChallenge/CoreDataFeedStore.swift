@@ -83,8 +83,8 @@ enum CoreDataFeedStoreError: Error {
 	case invalidModel
 }
 
-extension NSPersistentContainer {
-	fileprivate static func loadBy(modelName: String, storeURL: URL) throws -> NSPersistentContainer {
+private extension NSPersistentContainer {
+	static func loadBy(modelName: String, storeURL: URL) throws -> NSPersistentContainer {
 		guard let url = Bundle(for: CoreDataFeedStore.self).url(forResource: modelName, withExtension: "momd"), let model = NSManagedObjectModel(contentsOf: url) else {
 			throw CoreDataFeedStoreError.invalidModel
 		}
