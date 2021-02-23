@@ -132,6 +132,14 @@ class FeedStoreChallengeTests: XCTestCase, FeedStoreSpecs {
 		Swizzling.sExchangeInstance(cls1: NSManagedObjectContext.self, sel1: #selector(NSManagedObjectContext.save), cls2: FailingContext.self, sel2: #selector(FailingContext.save))
 	}
 	
+	func deleteWithFailure(from sut: FeedStore) {
+		activateNSManagedObjectContextDeleteFailure()
+		
+		deleteCache(from: sut)
+		
+		deactivateNSManagedObjectContextDeleteFailure()
+	}
+	
 	private class Swizzling: NSObject {
 		
 		class func sExchangeInstance(cls1: AnyClass, sel1: Selector, cls2: AnyClass, sel2: Selector) {
@@ -236,6 +244,18 @@ extension FeedStoreChallengeTests: FailableDeleteFeedStoreSpecs {
 		assertThatDeleteHasNoSideEffectsOnDeletionError(on: sut)
 		
 		deactivateNSManagedObjectContextDeleteFailure()
+	}
+	
+	func test_delete_hasNoSideEffectsOnDeletionErrorAndNonEmptyCache() throws {
+		let sut = try makeSUT()
+		let feed = uniqueImageFeed()
+		let timestamp = Date()
+		
+		insert((feed, timestamp), to: sut)
+		
+		deleteWithFailure(from: sut)
+		
+		expect(sut, toRetrieve: .found(feed: feed, timestamp: timestamp))
 	}
 
 }
