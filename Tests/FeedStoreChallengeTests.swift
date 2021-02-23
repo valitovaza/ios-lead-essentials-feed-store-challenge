@@ -98,10 +98,32 @@ class FeedStoreChallengeTests: XCTestCase, FeedStoreSpecs {
 		return try CoreDataFeedStore(storeURL: storeURL)
 	}
 	
-	fileprivate func toggleContextRetrieveTestFailure() {
+	func activateNSManagedObjectContextRetrievalFailure() {
+		toggleNSManagedObjectContextRetrieveTestFailure()
+	}
+	
+	func deactivateNSManagedObjectContextRetrievalFailure() {
+		toggleNSManagedObjectContextRetrieveTestFailure()
+	}
+	
+	func activateNSManagedObjectContextSaveFailure() {
+		toggleNSManagedObjectContextSaveTestFailure()
+	}
+	
+	func deactivateNSManagedObjectContextSaveFailure() {
+		toggleNSManagedObjectContextSaveTestFailure()
+	}
+	
+	private func toggleNSManagedObjectContextRetrieveTestFailure() {
 		Swizzling.sExchangeInstance(cls1: NSManagedObjectContext.self, sel1: #selector(NSManagedObjectContext.fetch(_:)), cls2: FailingContext.self, sel2: #selector(FailingContext.fetch(_:)))
 	}
+	
+	private func toggleNSManagedObjectContextSaveTestFailure() {
+		Swizzling.sExchangeInstance(cls1: NSManagedObjectContext.self, sel1: #selector(NSManagedObjectContext.save), cls2: FailingContext.self, sel2: #selector(FailingContext.save))
+	}
+	
 	private class Swizzling: NSObject {
+		
 		class func sExchangeInstance(cls1: AnyClass, sel1: Selector, cls2: AnyClass, sel2: Selector) {
 
 			let originalMethod = class_getInstanceMethod(cls1, sel1)
@@ -109,10 +131,21 @@ class FeedStoreChallengeTests: XCTestCase, FeedStoreSpecs {
 
 			method_exchangeImplementations(originalMethod!, swizzledMethod!)
 		}
+		
 	}
+	
 	private class FailingContext {
+		
 		@objc func fetch(_ request: NSFetchRequest<NSNumber>) throws -> [NSNumber] {
-			throw NSError(domain: "any-error", code: 0, userInfo: nil)
+			throw anyError
+		}
+		
+		private var anyError: NSError {
+			NSError(domain: "any-error", code: 0, userInfo: nil)
+		}
+		
+		@objc func save() throws {
+			throw anyError
 		}
 	}
 }
@@ -130,40 +163,44 @@ extension FeedStoreChallengeTests: FailableRetrieveFeedStoreSpecs {
 	func test_retrieve_deliversFailureOnRetrievalError() throws {
 		let sut = try makeSUT()
 		
-		toggleContextRetrieveTestFailure()
+		activateNSManagedObjectContextRetrievalFailure()
 		
 		assertThatRetrieveDeliversFailureOnRetrievalError(on: sut)
 		
-		toggleContextRetrieveTestFailure()
+		deactivateNSManagedObjectContextRetrievalFailure()
 	}
 
 	func test_retrieve_hasNoSideEffectsOnFailure() throws {
 		let sut = try makeSUT()
 
-		toggleContextRetrieveTestFailure()
+		activateNSManagedObjectContextRetrievalFailure()
 		
 		assertThatRetrieveHasNoSideEffectsOnFailure(on: sut)
 		
-		toggleContextRetrieveTestFailure()
+		deactivateNSManagedObjectContextRetrievalFailure()
 	}
 
 }
 
-//extension FeedStoreChallengeTests: FailableInsertFeedStoreSpecs {
+extension FeedStoreChallengeTests: FailableInsertFeedStoreSpecs {
+
+	func test_insert_deliversErrorOnInsertionError() throws {
+		let sut = try makeSUT()
+
+		activateNSManagedObjectContextSaveFailure()
+		
+		assertThatInsertDeliversErrorOnInsertionError(on: sut)
+		
+		deactivateNSManagedObjectContextSaveFailure()
+	}
+
+	func test_insert_hasNoSideEffectsOnInsertionError() throws {
+//		let sut = try makeSUT()
 //
-//	func test_insert_deliversErrorOnInsertionError() throws {
-////		let sut = try makeSUT()
-////
-////		assertThatInsertDeliversErrorOnInsertionError(on: sut)
-//	}
-//
-//	func test_insert_hasNoSideEffectsOnInsertionError() throws {
-////		let sut = try makeSUT()
-////
-////		assertThatInsertHasNoSideEffectsOnInsertionError(on: sut)
-//	}
-//
-//}
+//		assertThatInsertHasNoSideEffectsOnInsertionError(on: sut)
+	}
+
+}
 
 //extension FeedStoreChallengeTests: FailableDeleteFeedStoreSpecs {
 //
