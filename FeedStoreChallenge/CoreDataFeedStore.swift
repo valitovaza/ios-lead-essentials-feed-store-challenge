@@ -101,7 +101,7 @@ private extension NSPersistentContainer {
 
 private extension NSOrderedSet {
 	var toLocalFeedImages: [LocalFeedImage] {
-		compactMap({$0 as? CoreDataFeedImage}).compactMap({
+		compactMap({$0 as? CoreDataFeedImage}).map({
 			return LocalFeedImage(id: $0.id, description: $0.desc, location: $0.location, url: $0.url)
 		})
 	}
