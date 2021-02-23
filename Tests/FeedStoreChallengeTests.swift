@@ -147,15 +147,15 @@ class FeedStoreChallengeTests: XCTestCase, FeedStoreSpecs {
 	private class FailingContext {
 		
 		@objc func fetch(_ request: NSFetchRequest<NSNumber>) throws -> [NSNumber] {
-			throw anyError
+			throw anyError()
 		}
 		
-		private var anyError: NSError {
+		private func anyError() -> NSError {
 			NSError(domain: "any-error", code: 0)
 		}
 		
 		@objc func save() throws {
-			throw anyError
+			throw anyError()
 		}
 	}
 }
