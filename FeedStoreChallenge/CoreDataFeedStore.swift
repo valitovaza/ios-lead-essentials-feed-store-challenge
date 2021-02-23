@@ -15,6 +15,7 @@ public class CoreDataFeedStore: FeedStore {
 		context.perform {
 			do {
 				try self.removePreviousCoreDataFeedOptionally()
+				try self.context.save()
 				completion(nil)
 			} catch {
 				completion(error)
