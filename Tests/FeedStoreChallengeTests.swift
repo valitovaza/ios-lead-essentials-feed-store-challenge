@@ -114,6 +114,16 @@ class FeedStoreChallengeTests: XCTestCase, FeedStoreSpecs {
 		toggleNSManagedObjectContextSaveTestFailure()
 	}
 	
+	func activateNSManagedObjectContextDeleteFailure() {
+		//core data doesn't fail on deletion, it fails on retrieval
+		toggleNSManagedObjectContextRetrieveTestFailure()
+	}
+	
+	func deactivateNSManagedObjectContextDeleteFailure() {
+		//core data doesn't fail on deletion, it fails on retrieval
+		toggleNSManagedObjectContextRetrieveTestFailure()
+	}
+	
 	private func toggleNSManagedObjectContextRetrieveTestFailure() {
 		Swizzling.sExchangeInstance(cls1: NSManagedObjectContext.self, sel1: #selector(NSManagedObjectContext.fetch(_:)), cls2: FailingContext.self, sel2: #selector(FailingContext.fetch(_:)))
 	}
@@ -206,18 +216,22 @@ extension FeedStoreChallengeTests: FailableInsertFeedStoreSpecs {
 
 }
 
-//extension FeedStoreChallengeTests: FailableDeleteFeedStoreSpecs {
+extension FeedStoreChallengeTests: FailableDeleteFeedStoreSpecs {
+
+	func test_delete_deliversErrorOnDeletionError() throws {
+		let sut = try makeSUT()
+
+		activateNSManagedObjectContextDeleteFailure()
+		
+		assertThatDeleteDeliversErrorOnDeletionError(on: sut)
+		
+		deactivateNSManagedObjectContextDeleteFailure()
+	}
+
+	func test_delete_hasNoSideEffectsOnDeletionError() throws {
+//		let sut = try makeSUT()
 //
-//	func test_delete_deliversErrorOnDeletionError() throws {
-////		let sut = try makeSUT()
-////
-////		assertThatDeleteDeliversErrorOnDeletionError(on: sut)
-//	}
-//
-//	func test_delete_hasNoSideEffectsOnDeletionError() throws {
-////		let sut = try makeSUT()
-////
-////		assertThatDeleteHasNoSideEffectsOnDeletionError(on: sut)
-//	}
-//
-//}
+//		assertThatDeleteHasNoSideEffectsOnDeletionError(on: sut)
+	}
+
+}
