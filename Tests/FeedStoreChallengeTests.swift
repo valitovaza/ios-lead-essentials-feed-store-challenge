@@ -115,13 +115,13 @@ class FeedStoreChallengeTests: XCTestCase, FeedStoreSpecs {
 	}
 	
 	func activateNSManagedObjectContextDeleteFailure() {
-		//core data doesn't fail on deletion, it fails on retrieval
-		toggleNSManagedObjectContextRetrieveTestFailure()
+		//core data doesn't fail on deletion, it fails on save
+		toggleNSManagedObjectContextSaveTestFailure()
 	}
 	
 	func deactivateNSManagedObjectContextDeleteFailure() {
-		//core data doesn't fail on deletion, it fails on retrieval
-		toggleNSManagedObjectContextRetrieveTestFailure()
+		//core data doesn't fail on deletion, it fails on save
+		toggleNSManagedObjectContextSaveTestFailure()
 	}
 	
 	private func toggleNSManagedObjectContextRetrieveTestFailure() {
