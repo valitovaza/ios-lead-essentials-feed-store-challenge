@@ -91,7 +91,7 @@ class FeedStoreIntegrationTests: XCTestCase {
 	private func deleteStoreArtifacts() throws {
 		let storeUrl = testSpecificStoreUrl()
 		if FileManager.default.fileExists(atPath: storeUrl.path) {
-			try FileManager.default.removeItem(at: testSpecificStoreUrl())
+			try FileManager.default.removeItem(at: storeUrl)
 		}
 	}
 	
