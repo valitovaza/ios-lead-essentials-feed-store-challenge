@@ -85,15 +85,18 @@ class FeedStoreIntegrationTests: XCTestCase {
 	}
 	
 	private func setupEmptyStoreState() throws {
-		deleteStoreArtifacts()
+		try deleteStoreArtifacts()
 	}
 	
-	private func deleteStoreArtifacts() {
-		try? FileManager.default.removeItem(at: testSpecificStoreUrl())
+	private func deleteStoreArtifacts() throws {
+		let storeUrl = testSpecificStoreUrl()
+		if FileManager.default.fileExists(atPath: storeUrl.path) {
+			try FileManager.default.removeItem(at: testSpecificStoreUrl())
+		}
 	}
 	
 	private func undoStoreSideEffects() throws {
-		deleteStoreArtifacts()
+		try deleteStoreArtifacts()
 	}
 	
 }
