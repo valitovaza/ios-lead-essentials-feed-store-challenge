@@ -231,7 +231,11 @@ extension FeedStoreChallengeTests: FailableDeleteFeedStoreSpecs {
 	func test_delete_hasNoSideEffectsOnDeletionError() throws {
 		let sut = try makeSUT()
 		
+		activateNSManagedObjectContextDeleteFailure()
+		
 		assertThatDeleteHasNoSideEffectsOnDeletionError(on: sut)
+		
+		deactivateNSManagedObjectContextDeleteFailure()
 	}
 
 }
