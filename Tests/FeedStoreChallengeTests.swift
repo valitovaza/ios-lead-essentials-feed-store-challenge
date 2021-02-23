@@ -195,9 +195,13 @@ extension FeedStoreChallengeTests: FailableInsertFeedStoreSpecs {
 	}
 
 	func test_insert_hasNoSideEffectsOnInsertionError() throws {
-//		let sut = try makeSUT()
-//
-//		assertThatInsertHasNoSideEffectsOnInsertionError(on: sut)
+		let sut = try makeSUT()
+
+		activateNSManagedObjectContextSaveFailure()
+		
+		assertThatInsertHasNoSideEffectsOnInsertionError(on: sut)
+		
+		deactivateNSManagedObjectContextSaveFailure()
 	}
 
 }
