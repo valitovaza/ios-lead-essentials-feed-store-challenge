@@ -151,7 +151,7 @@ class FeedStoreChallengeTests: XCTestCase, FeedStoreSpecs {
 		}
 		
 		private var anyError: NSError {
-			NSError(domain: "any-error", code: 0, userInfo: nil)
+			NSError(domain: "any-error", code: 0)
 		}
 		
 		@objc func save() throws {
